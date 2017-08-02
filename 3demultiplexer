@@ -1,6 +1,7 @@
 '''
-This program takes a 2 fastq file(R1 and R2) and output X number fastq file with reads with a the specific adaptors (In R2), special for 3'
-adaptor spliting. Output = name1_R1.fastq, name1_R2.fastq,..... nameN_R1.fastq, nameN_R2.fastq.
+This program takes 2 fastq file(R1 and R2) and output X number of fastq files with the reads that correspond to the
+specific adaptors (In the R2), specialy designed  for 3' adaptor spliting.
+Output = name1_R1.fastq, name1_R2.fastq,..... nameN_R1.fastq, nameN_R2.fastq.
 '''
 #Import systems and functions
 
@@ -22,9 +23,9 @@ path2 = (sys.argv[2])
 
 # Define the number of adaptors, in the argument 4 in UNIX commmand
 nadaptor = int((sys.argv[3]))
-# Write a list with the names of sample and a list with the adaptors (In the same order order)
-names =['name1','name2','name3','name4','name5','name6','name7','name8']
 
+# Write a list with the names of samples and a list with the corresponding adaptors (In the same order order)
+names =['name1','name2','name3','name4','name5','name6','name7','name8']
 barcodes = ['ACTAATT','CACTGAT','CAGCTTT','CCTATAT','GATCCCT','GGCTTGT','GGATACT','TACGACT']
 
 #Demultiplexing 3' Barcoded libraries Version 2
