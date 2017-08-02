@@ -1,0 +1,87 @@
+'''
+This program takes a 2 fastq file(R1 and R2) and output X number fastq file with reads with a the specific adaptors (In R2), special for 3'
+adaptor spliting. Output = name1_R1.fastq, name1_R2.fastq,..... nameN_R1.fastq, nameN_R2.fastq.
+'''
+#Import systems and functions
+
+import sys
+'''
+Command in UNIX: python arg1: pipelineLocation arg2: fasqfile1Location arg3: fasqfile2Location arg4: Number of adaptors used
+Be carefull to put a different name to do not erase previous files
+'''
+
+#Generate a list with R1 files locations
+print 'Number of arguments:', len(sys.argv), 'arguments.'
+print 'Argument List:', str(sys.argv)
+
+# Define the path to the file 1, in the argument 2 in UNIX commmand
+path1 = (sys.argv[1])
+
+# Define the path to the file 2, in the argument 3 in UNIX commmand
+path2 = (sys.argv[2])
+
+# Define the number of adaptors, in the argument 4 in UNIX commmand
+nadaptor = int((sys.argv[3]))
+# Write a list with the names of sample and a list with the adaptors (In the same order order)
+names =['name1','name2','name3','name4','name5','name6','name7','name8']
+
+barcodes = ['ACTAATT','CACTGAT','CAGCTTT','CCTATAT','GATCCCT','GGCTTGT','GGATACT','TACGACT']
+
+#Demultiplexing 3' Barcoded libraries Version 2
+def fastq_spliter2(path1, path2,nadaptor,names):
+    import difflib
+    file1 = open(path1)
+    file2 = open(path2)
+    # Start reading the file
+    a1 = file1.readline()
+    # Create list outputs
+    R1store = [[] for x in xrange(nadaptor)]
+    R2store = [[] for x in xrange(nadaptor)]
+    # Create a list with the adaptor sequences
+    seq = barcodes
+    while a1 != '':
+        # Read File 1
+        b1 = file1.readline()
+        c1 = file1.readline()
+        d1 = file1.readline()
+        # Read File2
+        a2 = file2.readline()
+        b2 = file2.readline()
+        c2 = file2.readline()
+        d2 = file2.readline()
+
+        for i in range(len(R1store)):
+            ratio = difflib.SequenceMatcher(None,seq[i],b2[3:10]).ratio()
+            #Ratio >0.75 allows 1 mismatch, 0.99 equal sequences
+            if ratio > 0.99:
+                barcode1 = b2[:10]
+                R1store[i].append(a1.strip() + "+" + barcode1[:3] + "/" + barcode1[3:])
+                R1store[i].append(b1.strip())
+                R1store[i].append(c1.strip())
+                R1store[i].append(d1.strip())
+                R2store[i].append(a2.strip() + "+" + barcode1[:3] + "/" + barcode1[3:])
+            # And delete the barcode from the sequence
+                R2store[i].append(b2[10:].strip())
+                R2store[i].append(c2.strip())
+                R2store[i].append(d2[10:].strip())
+                break
+        # Continue reading
+        a1 = file1.readline()
+
+        # Save in files
+    for i in range(len(R1store)):
+        thefile = open(name[i] +"_R1"+ ".fastq", 'w')
+        for item1 in R1store[i]:
+            print>> thefile, item1
+        thefile.close()
+
+    for i in range(len(R2store)):
+        thefile = open(name[i] +"_R2"  ".fastq", 'w')
+        for item2 in R2store[i]:
+            print>> thefile, item2
+        thefile.close()
+
+
+# Use the function to demultiplex
+fastq_spliter(path1,path2,nadaptor,names)
+
